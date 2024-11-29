@@ -78,6 +78,10 @@ settings_local.py
 docker-compose.override.yml
 docker-compose.local.yml
 
+# Examples and use cases
+examples/
+use_cases/
+
 # Other
 .history/
 .env.*
