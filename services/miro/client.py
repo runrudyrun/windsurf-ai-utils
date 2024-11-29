@@ -1,4 +1,4 @@
-"""Клиент для работы с Miro API."""
+"""Client for working with Miro API."""
 
 import requests
 from typing import Dict, Any, List, Optional
@@ -6,7 +6,7 @@ from core.config import settings
 from core.security import security_manager
 
 class MiroClient:
-    """Клиент для безопасной работы с Miro API."""
+    """Client for secure interaction with Miro API."""
 
     def __init__(self):
         self._base_url = "https://api.miro.com/v2"
@@ -19,7 +19,16 @@ class MiroClient:
         }
 
     def _make_request(self, method: str, endpoint: str, data: Dict[str, Any] = None) -> Dict[str, Any]:
-        """Выполнить запрос к Miro API."""
+        """Make a request to Miro API.
+        
+        Args:
+            method: HTTP method (GET, POST, etc.)
+            endpoint: API endpoint
+            data: Request data
+            
+        Returns:
+            API response as dictionary
+        """
         url = f"{self._base_url}{endpoint}"
         response = requests.request(
             method=method,
@@ -31,13 +40,28 @@ class MiroClient:
         return response.json()
 
     def get_board_items(self, item_type: Optional[str] = None) -> List[Dict[str, Any]]:
-        """Получить элементы с доски."""
+        """Get items from the board.
+        
+        Args:
+            item_type: Optional filter by item type
+            
+        Returns:
+            List of board items
+        """
         endpoint = f"/boards/{self._board_id}/items"
         params = {"type": item_type} if item_type else {}
         return self._make_request("GET", endpoint, params)["data"]
 
     def create_card(self, content: str, position: Dict[str, float]) -> Dict[str, Any]:
-        """Создать карточку на доске."""
+        """Create a card on the board.
+        
+        Args:
+            content: Card content
+            position: Card position (x, y coordinates)
+            
+        Returns:
+            Created card data
+        """
         endpoint = f"/boards/{self._board_id}/cards"
         data = {
             "data": {
@@ -48,7 +72,15 @@ class MiroClient:
         return self._make_request("POST", endpoint, data)
 
     def update_card(self, card_id: str, content: str) -> Dict[str, Any]:
-        """Обновить карточку на доске."""
+        """Update a card on the board.
+        
+        Args:
+            card_id: ID of the card to update
+            content: New card content
+            
+        Returns:
+            Updated card data
+        """
         endpoint = f"/boards/{self._board_id}/cards/{card_id}"
         data = {
             "data": {
@@ -58,19 +90,26 @@ class MiroClient:
         return self._make_request("PATCH", endpoint, data)
 
     def delete_card(self, card_id: str) -> None:
-        """Удалить карточку с доски."""
+        """Delete a card from the board.
+        
+        Args:
+            card_id: ID of the card to delete
+        """
         endpoint = f"/boards/{self._board_id}/cards/{card_id}"
         self._make_request("DELETE", endpoint)
 
     def create_connector(self, start_item_id: str, end_item_id: str, 
                         connector_type: str = "straight", style: Dict[str, Any] = None) -> Dict[str, Any]:
-        """Создать связь между элементами на доске.
+        """Create a connection between items on the board.
         
         Args:
-            start_item_id: ID начального элемента
-            end_item_id: ID конечного элемента
-            connector_type: Тип связи ('straight', 'elbowed', 'curved')
-            style: Стиль связи (цвет, толщина и т.д.)
+            start_item_id: ID of the start item
+            end_item_id: ID of the end item
+            connector_type: Connection type ('straight', 'elbowed', 'curved')
+            style: Connection style (color, width, etc.)
+            
+        Returns:
+            Created connector data
         """
         endpoint = f"/boards/{self._board_id}/connectors"
         
@@ -97,10 +136,13 @@ class MiroClient:
         return self._make_request("POST", endpoint, data)
 
     def get_connectors(self, item_id: Optional[str] = None) -> List[Dict[str, Any]]:
-        """Получить список связей на доске.
+        """Get list of connectors on the board.
         
         Args:
-            item_id: Опциональный ID элемента для фильтрации связей
+            item_id: Optional item ID to filter connectors
+            
+        Returns:
+            List of connectors
         """
         endpoint = f"/boards/{self._board_id}/connectors"
         if item_id:
@@ -110,12 +152,15 @@ class MiroClient:
     def update_connector(self, connector_id: str, 
                         connector_type: Optional[str] = None, 
                         style: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-        """Обновить параметры связи.
+        """Update connector parameters.
         
         Args:
-            connector_id: ID связи
-            connector_type: Новый тип связи
-            style: Новый стиль связи
+            connector_id: Connector ID
+            connector_type: New connector type
+            style: New connector style
+            
+        Returns:
+            Updated connector data
         """
         endpoint = f"/boards/{self._board_id}/connectors/{connector_id}"
         data = {"data": {}}
@@ -128,38 +173,38 @@ class MiroClient:
         return self._make_request("PATCH", endpoint, data)
 
     def delete_connector(self, connector_id: str) -> None:
-        """Удалить связь с доски.
+        """Delete a connector from the board.
         
         Args:
-            connector_id: ID связи для удаления
+            connector_id: ID of the connector to delete
         """
         endpoint = f"/boards/{self._board_id}/connectors/{connector_id}"
         self._make_request("DELETE", endpoint)
 
     def create_related_cards(self, cards_data: List[Dict[str, Any]], 
                            connection_type: str = "straight") -> List[Dict[str, Any]]:
-        """Создать несколько связанных карточек на доске.
+        """Create multiple connected cards on the board.
         
         Args:
-            cards_data: Список словарей с данными карточек:
+            cards_data: List of card data dictionaries:
                        [{"content": str, "position": Dict[str, float]}, ...]
-            connection_type: Тип связи между карточками
+            connection_type: Type of connection between cards
         
         Returns:
-            Список созданных карточек с их связями
+            List of created cards with their connections
         """
         created_cards = []
         previous_card = None
 
         for card_data in cards_data:
-            # Создаем новую карточку
+            # Create new card
             new_card = self.create_card(
                 content=card_data["content"],
                 position=card_data["position"]
             )
             created_cards.append(new_card)
 
-            # Если есть предыдущая карточка, создаем связь
+            # If there's a previous card, create connection
             if previous_card:
                 self.create_connector(
                     start_item_id=previous_card["id"],
@@ -171,5 +216,5 @@ class MiroClient:
 
         return created_cards
 
-# Создаем глобальный экземпляр клиента
+# Create global client instance
 miro_client = MiroClient()
