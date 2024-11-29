@@ -74,6 +74,10 @@ cp .env.example .env
 - Python 3.8+
 - Required packages in requirements.txt
 
+## Use cases and examples
+
+- TO BE ADDED
+
 ## Contributing
 
 1. Fork the repository
