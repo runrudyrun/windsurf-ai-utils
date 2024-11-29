@@ -3,7 +3,8 @@
 import os
 from typing import Optional
 from dotenv import load_dotenv
-from pydantic import BaseSettings, SecretStr
+from pydantic import SecretStr
+from pydantic_settings import BaseSettings
 
 # Load environment variables from .env file
 load_dotenv()
