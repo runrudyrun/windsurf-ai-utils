@@ -1,46 +1,44 @@
 # Windsurf AI Utils
 
-A collection of secure utilities for interacting with various services and APIs, designed specifically for AI assistants.
+A collection of secure utilities for Cascade AI to interact with various services and APIs. This repository provides tools for managing credentials, interacting with databases, and integrating with external services.
 
 ## Features
 
 - **Secure Credential Management**
-  - Environment variables-based configuration
-  - Encrypted storage for sensitive data
-  - Safe credential handling patterns
+  - Environment-based configuration using `python-dotenv`
+  - Secure handling of sensitive data using JWT encryption
+  - Credential masking capabilities
+  - Type-safe settings using Pydantic
 
 - **ClickHouse Integration**
-  - Secure database connections
-  - Efficient query execution
-  - Stream processing support
-  - Query parameter sanitization
+  - Secure database connection management
+  - Query execution with parameter substitution
+  - Support for streaming large result sets
+  - Connection health checks
 
-- **Miro API Integration**
-  - Board management
-  - Card creation and updates
-  - Connector management (relationships between items)
-  - Task progress tracking
-  - Batch operations support
+- **Miro Integration**
+  - Board item management (cards, connectors)
+  - Create and update cards
+  - Manage relationships between items
+  - Secure API token handling
 
 ## Project Structure
 
 ```
 windsurf-ai-utils/
-├── core/                      # Core components
-│   ├── config.py             # Configuration and environment management
-│   └── security.py           # Security utilities for credential handling
-├── services/                  # Service integrations
-│   ├── clickhouse/           # ClickHouse database client
-│   │   ├── __init__.py
-│   │   └── client.py
-│   └── miro/                 # Miro API integration
-│       ├── __init__.py
-│       └── client.py
-├── utils/                    # Helper utilities
-└── examples/                 # Usage examples
+├── core/
+│   ├── config.py        # Configuration and environment management
+│   └── security.py      # JWT-based security utilities
+├── services/
+│   ├── clickhouse/
+│   │   └── client.py    # ClickHouse database client
+│   └── miro/
+│       └── client.py    # Miro API client
+├── utils/               # Helper utilities
+└── examples/            # Usage examples
 ```
 
-## Installation
+## Setup
 
 1. Clone the repository:
 ```bash
@@ -48,28 +46,17 @@ git clone https://github.com/yourusername/windsurf-ai-utils.git
 cd windsurf-ai-utils
 ```
 
-2. Create a virtual environment:
+2. Configure environment:
 ```bash
 python -m venv venv
-```
-
-3. Activate the virtual environment:
-```bash
-# On Linux/macOS
-source venv/bin/activate
-# On Windows
-.\venv\Scripts\activate
-```
-
-4. Install dependencies:
-```bash
+source venv/bin/activate  # On Linux/macOS
 pip install -r requirements.txt
 ```
 
-5. Set up environment variables:
+3. Set up credentials:
 ```bash
 cp .env.example .env
-# Edit .env with your credentials
+# Configure your credentials in .env
 ```
 
 ## Usage Examples
@@ -79,13 +66,13 @@ cp .env.example .env
 ```python
 from services.clickhouse.client import clickhouse_client
 
-# Execute a query
+# Execute a query with parameters
 results = clickhouse_client.execute_query(
-    "SELECT * FROM your_table WHERE date >= {date}",
+    "SELECT * FROM table WHERE date >= {date}",
     params={"date": "2024-01-01"}
 )
 
-# Stream large results
+# Stream large result sets
 for row in clickhouse_client.execute_query_stream(
     "SELECT * FROM large_table"
 ):
@@ -97,45 +84,51 @@ for row in clickhouse_client.execute_query_stream(
 ```python
 from services.miro.client import miro_client
 
-# Create connected cards
-cards = miro_client.create_related_cards([
-    {
-        "content": "Task 1",
-        "position": {"x": 0, "y": 0}
-    },
-    {
-        "content": "Task 2",
-        "position": {"x": 200, "y": 0}
-    }
-], connection_type="curved")
-
-# Create custom connector
-miro_client.create_connector(
-    start_item_id=cards[0]["id"],
-    end_item_id=cards[1]["id"],
-    connector_type="straight",
-    style={
-        "strokeColor": "#ff0000",
-        "strokeWidth": 2,
-        "strokeStyle": "dashed"
-    }
+# Create a card
+card = miro_client.create_card(
+    content="Task Description",
+    position={"x": 0, "y": 0}
 )
+
+# Update card content
+miro_client.update_card(
+    card_id=card["id"],
+    content="Updated Task Description"
+)
+
+# Get board items
+items = miro_client.get_board_items(item_type="card")
 ```
 
-## Security
+### Security Manager
+
+```python
+from core.security import security_manager
+
+# Encrypt sensitive data
+encrypted = security_manager.encrypt_sensitive_data({
+    "api_key": "sensitive_value"
+})
+
+# Mask sensitive strings
+masked = security_manager.mask_sensitive_string("1234567890", visible_chars=4)
+# Output: '******7890'
+```
+
+## Security Considerations
 
 - All sensitive data is stored in environment variables
-- `.env` file is excluded from version control
-- Additional encryption layer for sensitive data
-- Secure credential handling patterns implemented
-- No hardcoded credentials or sensitive information
+- Sensitive values are handled as `SecretStr` using Pydantic
+- JWT encryption for additional data protection
+- Secure parameter substitution in database queries
+- No hardcoded credentials
 
 ## Contributing
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
+2. Create your feature branch (`git checkout -b feature/new-feature`)
+3. Commit your changes (`git commit -m 'Add new feature'`)
+4. Push to the branch (`git push origin feature/new-feature`)
 5. Open a Pull Request
 
 ## License
@@ -147,4 +140,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Python 3.8+
 - ClickHouse database
 - Miro account with API access
-- Required Python packages (see requirements.txt)
+- Required Python packages:
+  - `python-dotenv`
+  - `pydantic`
+  - `clickhouse-driver`
+  - `requests`
+  - `python-jose[cryptography]`
