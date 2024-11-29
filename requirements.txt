@@ -1,0 +1,6 @@
+python-dotenv>=1.0.0
+clickhouse-driver>=0.2.5
+miro-api>=0.1.0
+pydantic>=2.0.0
+requests>=2.31.0
+python-jose[cryptography]>=3.3.0

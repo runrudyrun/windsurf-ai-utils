@@ -1,0 +1,84 @@
+# Sensitive data
+.env
+*.pem
+*.key
+*.crt
+secrets/
+credentials/
+config/local.*
+
+# Environment folders
+.venv/
+venv/
+env/
+ENV/
+.python-version
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs and databases
+*.log
+*.sqlite
+*.sqlite3
+*.db
+logs/
+log/
+
+# Local development
+local_settings.py
+local.py
+settings_local.py
+*.local.py
+*.local.yml
+*.local.yaml
+*.local.json
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+.*.swp
+*~
+
+# Docker
+.docker/
+docker-compose.override.yml
+docker-compose.local.yml
+
+# Other
+.history/
+.env.*
+!.env.example
