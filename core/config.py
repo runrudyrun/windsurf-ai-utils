@@ -28,6 +28,13 @@ class MiroSettings(BaseSettings):
     class Config:
         env_prefix = 'MIRO_'
 
+class StripeSettings(BaseSettings):
+    """Settings for Stripe API."""
+    api_key: SecretStr
+
+    class Config:
+        env_prefix = 'STRIPE_'
+
 class SecuritySettings(BaseSettings):
     """Security settings."""
     encryption_key: SecretStr
@@ -40,6 +47,7 @@ class Settings:
     def __init__(self):
         self.clickhouse = ClickHouseSettings()
         self.miro = MiroSettings()
+        self.stripe = StripeSettings()
         self.security = SecuritySettings()
 
     @property
