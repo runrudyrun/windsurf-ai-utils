@@ -39,7 +39,8 @@ dev = [
 ]
 
 [tool.setuptools]
-packages = ["core", "services", "utils"]
+package-dir = {"" = "src"}
+packages = ["windsurf_ai_utils", "windsurf_ai_utils.core", "windsurf_ai_utils.services", "windsurf_ai_utils.utils"]
 
 [tool.setuptools.package-data]
 core = ["py.typed"]

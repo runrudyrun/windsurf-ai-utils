@@ -2,7 +2,7 @@
 
 from typing import Dict, Any, List, Optional
 import stripe
-from core.config import settings
+from windsurf_ai_utils.core.config import settings
 
 class StripeClient:
     """Client for secure interaction with Stripe API."""
